@@ -4,48 +4,49 @@
 
 ### 1. Описание функциональности монолитного приложения
 
-- __Sensor Management__: Полный набор операций CRUD для датчиков умного дома
+- __Sensor Management__: Full CRUD operations for smart home sensors
 
-  - Создание, чтение, обновление и удаление датчиков температуры
-  - Отслеживание значений датчиков, статуса и метаданных
+  - Create, read, update, and delete temperature sensors
+  - Track sensor values, status, and metadata
 
-- __Real-time Temperature Data__: Интеграция с внешним сервисом API температуры
+- __Real-time Temperature Data__: Integrates with an external temperature API service
 
-  - Получение данных о температуре в реальном времени для конкретных мест (Гостиная, Спальня, Кухня)
-  - Обновление показаний датчиков живыми данными из внешнего API
+  - Fetches real-time temperature data for specific locations (Living Room, Bedroom, Kitchen)
+  - Updates sensor readings with live data from the external API
+
 
 ### 2. Анализ архитектуры монолитного приложения
 
 ## Technical Stack
 
-- __Backend__: Go (Golang) с веб-фреймворком Gin
-- __Database__: PostgreSQL с драйвером pgx
-- __Containerization__: Docker и Docker Compose
-- __API Integration__: HTTP-клиент для синхронных вызовов внешнего API температуры
+- __Backend__: Go (Golang) with Gin web framework
+- __Database__: PostgreSQL with pgx driver
+- __Containerization__: Docker and Docker Compose
+- __API Integration__: HTTP client for external temperature synchronous API calls
 
 ## Current Architecture
 
-Приложение в настоящее время структурировано как __монолитное приложение__ с:
+The application is currently structured as a __monolithic application__ with:
 
-- Основным сервером приложения на порту 8080
-- Базой данных PostgreSQL для хранения данных датчиков
-- Интеграцией с внешним API температуры (ожидается на порту 8081)
-- Развертыванием на основе Docker
+- Main application server on port 8080
+- PostgreSQL database for sensor data storage
+- External temperature API integration (expected on port 8081)
+- Docker-based deployment
 
 ### 3. Определение доменов и границы контекстов
 
-- __Sensor management domain__: Домен управления датчиками (регистрация, удаление, перечисление)
-- __Sensor telemetry domain__: Домен телеметрических данных датчиков (сбор, перечисление), включая температуру
+- __Sensor management domain__: Sensor management domain (registration, removing, listing)
+- __Sensor telemetry domain__: Sensor telemetry data domain (collection, listing), including temperature
 
 ### **4. Проблемы монолитного решения**
 
-Поскольку компания довольно маленькая, монолитное решение может снизить затраты на обслуживание и разработку MVP в начале. Если бизнес покажет тенденцию к росту, его можно будет перенести в более масштабируемое решение. Единственным недостатком является то, что каждый вновь приобретенный датчик или умное устройство требует ручной установки.
+Since the company is pretty small monolithic solution can reduce maintenance and R&D costs in the beginning. If business show tendency to growth it can be migrated into more scalable solution. The only drawback is that each newly bought sensor or smart device require manual installation.
 
-### 5. Визуализация контекста системы — диаграмма С4
+### 5. Визуализация контекста системы — диаграмма С4
 
-
+```markdown
 [C4 context scheme](https://www.plantuml.com/plantuml/png/PPB1QW8n48RlUOgf9mi5BnvBKLJKGq5qUvPqTzH0abacishVlXEoujAU0ict__VFiBCabgKBthouMFkkGNXVJ2UBwN51KV0k7yQ84uzm-4c20VfhM3fxPXlWH0o7e1cmeO0mRrllQYkEeZ4xv4Hnt2NaDnXzwJ7ISwi1R6j9S7Do0RaWf1m0bnoGYaO8Wetsh1SO4t426nkuEho1FhSQ81qZD5RiwDMOKcvSFbR7e55vok9FYkHLwMgmpvfvWk9oyLmw39L3Mw3eX5Yvf_EukiiuGqVREfLK0tw-ssQl4iZHUitbgwiHMgQhQxBkxopmRHCsG14yzVM8-pwmNMRj7ds_qJ9jsMpAearLxIRxrQ7APcKp-e065TSewR_vn1GU8R1ULJ0P85aymzZa7-KN)
-
+```
 
 # Задание 2. Проектирование микросервисной архитектуры
 
@@ -55,7 +56,7 @@
 
 **Диаграмма компонентов (Components)**
 
-[C4 components scheme](https://www.plantuml.com/plantuml/png/VLNBRjiw4DtxAtYzk7M00jrasHH9xG0D41UEbQu5Mfh81CIXoncv2OhyU_cWhOUiU6DnEVCOmv7jyJISgFhsNyAYxefGNnTNdzPNkTBemy60VdRRFP9tDpSY9LakPC492IMulwLmQAiHVP639gyosnfaAL2iAlTeeIZAY0lTv_5_C4yYrKuqvbcxkmRGrnPo9uUvrSj-Ac11XOQY6G5-Mz_ShxhU1RXhGTlvMwdUFtae367tEMqK8Rp69e6WVyN6I0PIpr0Y0DOWKqnmhFtsRW_WmjPQeNkNOI8NmJMlKmzISRlfi5IMWMn3OazMTzEhT2LvbvEOYrHLg01EJ7DhyJVcN2_S_jFO7bG3fjms_liMTnj7dmRxbyFnWyb-WdTKWAM1wEGNJ6NEGci_szvisZmj3yabdLBQw5In5QoCXZcNnXyKLKJBPC1M7937Vvm5ck3YetrOTBZESuUPCtx4262fwXbuGEtr7VX_4454U3v0k4Mwb4RkfBDsDWMN4gM8sGQof3bezOvZccAjgOjEDKJKqfQm2iKpGG-OORNvTcgoWkvhNkox25qq-ngHNiW0KT07a7RkKuZe-EOO80OwcHfa1fz0Vy-6zqgMODbXLLEuOL3toNBz6KAcD3pvDsxIXjhZge4ycVnOgmuXHY940sh5rM4cNOc_pEPfwGO-4G9jJg2VHkojgieBshb3DsD99R1vDaUaA6oaXtX7yLx0QTLVCPtLTwjUIBjLYlUjJkkou0BUQuK7IGNVlHi-ecyfsNPVZ9y0JRfCYnC5wgxkCV2oW1BnmmrQE3GkGjYwg_-HqKCI66EXT5QEeQ4IokzjrdZAgPafBZY1u8IgfDuO1ftucmvPztjuIc3ZjVf-xAAgaX326riuhVcrj4qklu7)
+[C4 components scheme](https://www.plantuml.com/plantuml/png/VLNBRjiw4DtxAtYzk7M00jrasHH9xG0D41UEbQu5Mfh81CIXoncv2OhyU_cWhOUiU6DnDEVCOmv7jyJISgFhsNyAYxefGNnTNdzPNkTBemy60VdRRFP9tDpSY9LakPC492IMulwLmQAiHVP639gyosnfaAL2iAlTeeIZAY0lTv_5_C4yYrKuqvbcxkmRGrnPo9uUvrSj-Ac11XOQY6G5-Mz_ShxhU1RXhGTlvMwdUFtae367tEMqK8Rp69e6WVyN6I0PIpr0Y0DOWKqnmhFtsRW_WmjPQeNkNOI8NmJMlKmzISRlfi5IMWMn3OazMTzEhT2LvbvEOYrHLg01EJ7DhyJVcN2_S_jFO7bG3fjms_liMTnj7dmRxbyFnWyb-WdTKWAM1wEGNJ6NEGci_szvisZmj3yabdLBQw5In5QoCXZcNnXyKLKJBPC1M7937Vvm5ck3YetrOTBZESuUPCtx4262fwXbuGEtr7VX_4454U3v0k4Mwb4RkfBDsDWMN4gM8sGQof3bezOvZccAjgOjEDKJKqfQm2iKpGG-OORNvTcgoWkvhNkox25qq-ngHNiW0KT07a7RkKuZe-EOO80OwcHfa1fz0Vy-6zqgMODbXLLEuOL3toNBz6KAcD3pvDsxIXjhZge4ycVnOgmuXHY940sh5rM4cNOc_pEPfwGO-4G9jJg2VHkojgieBshb3DsD99R1vDaUaA6oaXtX7yLx0QTLVCPtLTwjUIBjLYlUjJkkou0BUQuK7IGNVlHi-ecyfsNPVZ9y0JRfCYnC5wgxkCV2oW1BnmmrQE3GkGjYwg_-HqKCI66EXT5QEeQ4IokzjrdZAgPafBZY1u8IgfDuO1ftucmvPztjuIc3ZjVf-xAAgaX326riuhVcrj4qklu7)
 
 **Диаграмма кода (Code)**
 
@@ -74,15 +75,13 @@
 ### 2. Документация API
 
 [metrics OpenAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/openapi.yaml)
-
 [metrics AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/asyncapi.yaml)
-
 [device-management AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/device-management/asyncapi.yaml)
 
 # Задание 5. Работа с docker и docker-compose
 
-Внутри каталога "apps" каждое приложение содержит файлы "Dockerfile" и "docker-compose.yml". Последние используются только для целей разработки. Основной файл находится в каталоге "apps".
+Inside "apps" directory each application contains "Dockerfile" and "docker-compose.yml" files. The latter ones used only for development purposes. THe main one resides in the "apps" directory.
 
 # **Задание 6. Разработка MVP**
 
-Каталог "apps" содержит полный набор приложений. Все они взаимодействуют друг с другом (REST API и события через очередь).
+"apps" directory contains entire set of applications. All of them interacts with each other (REST API and events through queue).
