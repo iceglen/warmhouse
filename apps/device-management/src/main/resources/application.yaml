@@ -1,0 +1,20 @@
+server:
+  port: 8085
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: ${POSTGRES_PASSWORD}
+    username: ${POSTGRES_USER}
+    jdbc-url: jdbc:postgresql://${POSTGRES_HOST}/${POSTGRES_DB}
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+  application:
+    name: device-management
+client:
+  smart-home-service:
+    path: ${SMART_HOME_SERVICE_URL}

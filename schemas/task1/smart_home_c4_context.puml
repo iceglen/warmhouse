@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+
+title System Context Diagram for Smart Home Application
+
+Person(user, "User", "Interacts with the smart home system to manage sensors and view temperature data")
+
+System(system, "Smart Home System", "Monolithic application for managing home sensors and temperature monitoring")
+
+System_Ext(temp_api, "Temperature API", "External service providing temperature data based on location or sensor ID")
+
+Rel(user, system, "Uses", "HTTP/REST API")
+Rel(system, temp_api, "Gets temperature data from", "HTTP GET /temperature")
+
+@enduml

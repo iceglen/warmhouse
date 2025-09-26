@@ -1,0 +1,33 @@
+@startuml Warmhouse IoT System Container Diagram
+!include <C4/C4_Container>
+
+Person(admin, "System User", "Manages devices, scenarios and monitors alerts")
+
+System_Boundary(warmhouse, "Warmhouse IoT System") {
+    Container(device_mgmt, "IoT Device Management System", "Manages IoT devices and sensor registration, configuration, and status monitoring")
+    Container(metric_system, "Metric System", "Collects and processes raw sensor metrics")
+    Container(scenario_system, "Scenario System", "Executes business logic scenarios based on sensor data")
+    Container(alerting_system, "Alerting System", "Generates and manages alerts based on thresholds and scenarios")
+    ContainerDb(metrics_db, "Metrics Database", "TimescaleDB", "Stores time-series metrics from sensors")
+    ContainerDb(device_db, "IoT Devices Database", "PostgreSQL", "Stores diveces information and configuration")
+    ContainerQueue(message_queue, "Message Queue", "RabbitMQ", "Handles async communication between components")
+}
+
+System_Ext(iot_devices, "IoT Devices & Sensors", "Various sensors (temperature, humidity, motion) and IoT devices")
+System_Ext(messenger, "Messengers", "Various messengers integration API")
+
+Rel_U(iot_devices, message_queue, "Sends device telemetry and status updates", "HTTPS/MQTT")
+Rel(device_mgmt, message_queue, "Publishes sensor data events")
+Rel(metric_system, message_queue, "Consumes raw sensor data")
+Rel(metric_system, metrics_db, "Stores aggregated metrics")
+Rel(scenario_system, metric_system, "Reads metrics data for scenario execution")
+Rel(scenario_system, alerting_system, "Triggers alerts based on scenarios")
+Rel(scenario_system, device_mgmt, "Triggers actions on device based on it's type and scenario")
+Rel(admin, device_mgmt, "Manages device configuration")
+Rel(admin, scenario_system, "Defines business scenarios")
+
+Rel_L(device_mgmt, device_db, "Reads device configuration data")
+Rel_R(alerting_system, messenger, "Sending alerts to user through different messengers")
+Rel_U(messenger, admin, "Sending notifications to user")
+
+@enduml

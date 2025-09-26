@@ -1,0 +1,126 @@
+asyncapi: 2.6.0
+info:
+  title: Metrics Event API
+  description: Event-driven API for metrics processing via RabbitMQ
+  version: 1.0.0
+  contact:
+    name: Metrics Team
+    email: metrics@example.com
+
+servers:
+  rabbitmq-dev:
+    url: amqp://localhost:5672
+    protocol: amqp
+    description: Local RabbitMQ development server
+    security:
+      - userPassword: []
+  rabbitmq-prod:
+    url: amqp://rabbitmq.example.com:5672
+    protocol: amqp
+    description: Production RabbitMQ server
+    security:
+      - userPassword: []
+
+defaultContentType: application/json
+
+channels:
+  metrics.events:
+    description: Channel for receiving metrics events from devices
+    publish:
+      summary: Publish metrics events
+      description: Devices publish metrics data to this channel
+      message:
+        $ref: '#/components/messages/MetricEvent'
+    subscribe:
+      summary: Subscribe to metrics events
+      description: Metrics service subscribes to process incoming metrics
+      message:
+        $ref: '#/components/messages/MetricEvent'
+
+components:
+  messages:
+    MetricEvent:
+      name: MetricEvent
+      title: Metric Event
+      summary: Event containing device metric data
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/MetricDto'
+      traits:
+        - $ref: '#/components/messageTraits/CommonHeaders'
+
+  schemas:
+    MetricDto:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+          description: ID of the device
+          example: 12345
+        metricName:
+          type: string
+          description: Name of the metric
+          example: "temperature"
+        metricValue:
+          type: string
+          description: Value of the metric
+          example: "23.5"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the metric was recorded
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - deviceId
+        - metricName
+        - metricValue
+        - timestamp
+
+    LatestMetricsResponse:
+      type: object
+      properties:
+        metricName:
+          type: string
+          description: Name of the metric
+          example: "temperature"
+        metricValue:
+          type: string
+          description: Value of the metric
+          example: "23.5"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the metric was recorded
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - metricName
+        - metricValue
+        - timestamp
+
+  messageTraits:
+    CommonHeaders:
+      headers:
+        type: object
+        properties:
+          messageId:
+            type: string
+            description: Unique message identifier
+          timestamp:
+            type: string
+            format: date-time
+            description: Message creation timestamp
+          source:
+            type: string
+            description: Source system or device
+          version:
+            type: string
+            description: Message schema version
+        required:
+          - messageId
+          - timestamp
+
+  securitySchemes:
+    userPassword:
+      type: userPassword
+      description: RabbitMQ username and password authentication

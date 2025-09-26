@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-legacy-system-id-column
+      author: artem
+      changes:
+        - addColumn:
+            tableName: device_entity
+            columns:
+              - column:
+                  name: legacy_system_id
+                  type: bigint
+                  constraints:
+                    nullable: true
