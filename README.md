@@ -74,7 +74,9 @@ Since the company is pretty small monolithic solution can reduce maintenance and
 
 ### 2. Документация API
 
-# TODO
+[metrics OpenAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/openapi.yaml)
+[metrics AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/asyncapi.yaml)
+[device-management AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/device-management/asyncapi.yaml)
 
 # Задание 5. Работа с docker и docker-compose
 
