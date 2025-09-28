@@ -57,7 +57,7 @@ services:
 
   metrics:
     build:
-      context: .
+      context: ./metrics
       dockerfile: Dockerfile
     # image: localhost/metrics:latest
     container_name: metrics-app
@@ -82,7 +82,7 @@ services:
 
   management:
     build:
-      context: .
+      context: ./device-management
       dockerfile: Dockerfile
     # image: localhost/management:latest
     container_name: management-app

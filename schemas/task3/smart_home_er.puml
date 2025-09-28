@@ -4,6 +4,7 @@ object DeviceType {
 }
 object Device {
     long id
+    long userId
     DeviceType type
 }
 object DeviceConfiguration {
