@@ -1,0 +1,127 @@
+openapi: 3.0.3
+info:
+  title: Metrics API
+  description: REST API for retrieving device metrics
+  version: 1.0.0
+  contact:
+    name: Metrics Team
+    email: metrics@example.com
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /api/v1/metrics/{deviceId}/latest:
+    get:
+      summary: Get latest metrics for a device
+      description: Retrieves the latest metrics for a specific device
+      operationId: getLatestMetrics
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          description: ID of the device
+          schema:
+            type: integer
+            format: int64
+            example: 12345
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LatestMetricsResponse'
+        '404':
+          description: Device not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    LatestMetricsResponse:
+      type: object
+      properties:
+        metricName:
+          type: string
+          description: Name of the metric
+          example: "temperature"
+        metricValue:
+          type: string
+          description: Value of the metric
+          example: "23.5"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the metric was recorded
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - metricName
+        - metricValue
+        - timestamp
+
+    MetricDto:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+          description: ID of the device
+          example: 12345
+        metricName:
+          type: string
+          description: Name of the metric
+          example: "temperature"
+        metricValue:
+          type: string
+          description: Value of the metric
+          example: "23.5"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the metric was recorded
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - deviceId
+        - metricName
+        - metricValue
+        - timestamp
+
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the error occurred
+        status:
+          type: integer
+          description: HTTP status code
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Error message
+        path:
+          type: string
+          description: Request path
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path

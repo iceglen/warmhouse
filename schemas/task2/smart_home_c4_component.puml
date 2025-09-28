@@ -1,0 +1,45 @@
+@startuml
+!include <C4/C4_Component>
+
+' === Databases and External Systems ===
+ContainerDb(device_db, "IoT Devices Database", "PostgreSQL")
+ContainerQueue(message_queue, "Message Queue", "RabbitMQ")
+System_Ext(iot_devices, "IoT Devices & Sensors")
+System_Ext(messenger, "Messengers")
+Person(admin, "System User")
+
+' === System Boundaries ===
+System_Boundary(device_mgmt, "IoT Device Management System") {
+    Component(device_api, "Device REST API", "Exposes device management endpoints")
+    Component(device_service, "Device Service", "Handles device registration and configuration")
+    Component(device_status, "Device Status Monitor", "Monitors device health and status")
+    Component(device_action, "Device Action Service", "Handles device actions")
+
+    Rel(device_service, device_db, "Stores device data")
+
+    Rel(device_api, device_service, "Handles device registration")
+    Rel(device_api, device_action, "Requests action execution")
+    Rel(device_action, message_queue, "Triggers actions")
+    Rel(device_service, message_queue, "Publishes events")
+    Rel(device_status, message_queue, "Publishes device events")
+    Rel(message_queue, device_status, "Consumes device events")
+}
+
+System_Boundary(alerting_system, "Alerting System") {
+    Component(alert_api, "Alert REST API", "Provides API for alerting")
+    Component(notification_service, "Notification Service", "Handles alert delivery")
+    Component(messenger_client, "Messenger Client", "Integrates with external messengers")
+
+    Rel(alert_api, notification_service, "Triggers alerts")
+    Rel(notification_service, messenger_client, "Dispatches to messengers")
+}
+
+' === External Interactions ===
+Rel(iot_devices, message_queue, "Sends telemetry")
+Rel(message_queue, iot_devices, "Listens for commands")
+Rel(admin, device_api, "Manages devices")
+
+' Alerting System interactions
+Rel(messenger_client, messenger, "Sends notifications")
+Rel(messenger, admin, "Delivers alerts to user")
+@enduml

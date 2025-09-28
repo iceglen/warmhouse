@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/2025/01/01-01-create-device-table.yaml
+  - include:
+      file: db/changelog/2025/01/01-02-add-legacy-system-id.yaml

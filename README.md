@@ -1,154 +1,88 @@
-# Project_template
-
-Это шаблон для решения проектной работы. Структура этого файла повторяет структуру заданий. Заполняйте его по мере работы над решением.
+# Warmhouse
 
 # Задание 1. Анализ и планирование
 
-<aside>
-
-Чтобы составить документ с описанием текущей архитектуры приложения, можно часть информации взять из описания компании и условия задания. Это нормально.
-
-</aside
-
 ### 1. Описание функциональности монолитного приложения
 
-**Управление отоплением:**
+- __Sensor Management__: Полный набор операций CRUD для датчиков умного дома
 
-- Пользователи могут…
-- Система поддерживает…
-- …
+  - Создание, чтение, обновление и удаление датчиков температуры
+  - Отслеживание значений датчиков, статуса и метаданных
 
-**Мониторинг температуры:**
+- __Real-time Temperature Data__: Интеграция с внешним сервисом API температуры
 
-- Пользователи могут…
-- Система поддерживает…
-- …
+  - Получение данных о температуре в реальном времени для конкретных мест (Гостиная, Спальня, Кухня)
+  - Обновление показаний датчиков живыми данными из внешнего API
 
 ### 2. Анализ архитектуры монолитного приложения
 
-Перечислите здесь основные особенности текущего приложения: какой язык программирования используется, какая база данных, как организовано взаимодействие между компонентами и так далее.
+## Technical Stack
+
+- __Backend__: Go (Golang) с веб-фреймворком Gin
+- __Database__: PostgreSQL с драйвером pgx
+- __Containerization__: Docker и Docker Compose
+- __API Integration__: HTTP-клиент для синхронных вызовов внешнего API температуры
+
+## Current Architecture
+
+Приложение в настоящее время структурировано как __монолитное приложение__ с:
+
+- Основным сервером приложения на порту 8080
+- Базой данных PostgreSQL для хранения данных датчиков
+- Интеграцией с внешним API температуры (ожидается на порту 8081)
+- Развертыванием на основе Docker
 
 ### 3. Определение доменов и границы контекстов
 
-Опишите здесь домены, которые вы выделили.
+- __Sensor management domain__: Домен управления датчиками (регистрация, удаление, перечисление)
+- __Sensor telemetry domain__: Домен телеметрических данных датчиков (сбор, перечисление), включая температуру
 
 ### **4. Проблемы монолитного решения**
 
-- …
-- …
-- …
+Поскольку компания довольно маленькая, монолитное решение может снизить затраты на обслуживание и разработку MVP в начале. Если бизнес покажет тенденцию к росту, его можно будет перенести в более масштабируемое решение. Единственным недостатком является то, что каждый вновь приобретенный датчик или умное устройство требует ручной установки.
 
-Если вы считаете, что текущее решение не вызывает проблем, аргументируйте свою позицию.
+### 5. Визуализация контекста системы — диаграмма С4
 
-### 5. Визуализация контекста системы — диаграмма С4
 
-Добавьте сюда диаграмму контекста в модели C4.
+[C4 context scheme](https://www.plantuml.com/plantuml/png/PPB1QW8n48RlUOgf9mi5BnvBKLJKGq5qUvPqTzH0abacishVlXEoujAU0ict__VFiBCabgKBthouMFkkGNXVJ2UBwN51KV0k7yQ84uzm-4c20VfhM3fxPXlWH0o7e1cmeO0mRrllQYkEeZ4xv4Hnt2NaDnXzwJ7ISwi1R6j9S7Do0RaWf1m0bnoGYaO8Wetsh1SO4t426nkuEho1FhSQ81qZD5RiwDMOKcvSFbR7e55vok9FYkHLwMgmpvfvWk9oyLmw39L3Mw3eX5Yvf_EukiiuGqVREfLK0tw-ssQl4iZHUitbgwiHMgQhQxBkxopmRHCsG14yzVM8-pwmNMRj7ds_qJ9jsMpAearLxIRxrQ7APcKp-e065TSewR_vn1GU8R1ULJ0P85aymzZa7-KN)
 
-Чтобы добавить ссылку в файл Readme.md, нужно использовать синтаксис Markdown. Это делают так:
-
-```markdown
-[Текст ссылки](URL)
-```
-
-Замените `Текст ссылки` текстом, который хотите использовать для ссылки. Вместо `URL` вставьте адрес, на который должна вести ссылка. Например:
-
-```markdown
-[Посетите Яндекс](https://ya.ru/)
-```
 
 # Задание 2. Проектирование микросервисной архитектуры
 
-В этом задании вам нужно предоставить только диаграммы в модели C4. Мы не просим вас отдельно описывать получившиеся микросервисы и то, как вы определили взаимодействия между компонентами To-Be системы. Если вы правильно подготовите диаграммы C4, они и так это покажут.
-
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+[C4 containers scheme](https://www.plantuml.com/plantuml/png/VLN1ZY8t4Btp5HKE2IDjj9SzHj7k3glDI3iICp39iMMw2sEfRHDNUHWKvT_ZQcCmD9CRDbNllNgkglvCh097syDVAjYjZuJmu5UmF12ZXNllM1c70UP6wQ3iv2VZsZvs2B_TV_fu_wavHVm-cImma7SprLdZFi3qYF526ARf-AYSqaZGuQjfaJu0jUXKC9v0kGwiTuPzI8SU0zFqRZB90CrN7rsdmc6sBn8JsYsvqpluPm80PzcpJDPORJabIUXyk86ingBZabn9bBYScRKHEl810cf371GRd-fhlTiO7SjnY6F5aKefnkdftPKUjJEDLenxTKXyNnOFy3sVHf4MEPYseK6SQ1lEbTXxt_VOSbQu2pw99IG8Qb_qPWWQGHVZp-3Buqq5_-qDsyW9S1qfPH51xxLfgrTRAy8El2jqdM8ruXfUCpbnvlfolAculcCALOp7JZY-mf1QqV0s86rzt-Mmav1hpldwQ1urtVha7C4ywHCmOLmPYzGcXlbNEIxPXyJ8wVPNmc2GYdcm2TuUAxp5bDj4YEhskYHRU68TSFdqe-Bgp2jAe74R7-pGH5BMPLjT4pv5Z9Yg8r8Qcx_b90NcCmp_2iMpMgyDFpx9xpyIQ2zkqi6r2TtQw4oR-TR8UqGdjpllq0rZz-zfyBwzySnuRih4NbRuCoopAyBofxn4f68Kp5B-JjuqXgHm6wtf3AUMjrw8xwJIQig4jkAK-j1f359R-Nr1SueG_nXroFMaUPAzyOnzytAf_Dgo9BqhgmWOUvJdFjH377UTTEHWuMgrM7vyV5gj4de2hxVA67eHrxsXBL8z5u2lOc_Elvhj4K9wReespt8DSZkxxlNIN4hhWB9dkl9tpXsF_lMQUKRLKKdAqZU9lkG1obeGizy370_yAXYjCOm7kkI-AwxskSPfHG09H8uuGnh-XO0FExnO4Hc_V9YkTd0hYrFsKMQLDUEZtaAzd7D-bNYjRH7ysq508c584WAcnoHEMdpHQCzVdCnq2tLamVyYb-WJOExz7vSDMg-e_BpvvdBLL1tMF8_NTgqoZuzeah0iHTJTiWxYuEthQ73FL3LoFVeFnyb6WhtXBNHciy60ZiSeB_NEoCzy5kaycyrnvPsqYbUVKq2q_Ny0)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[C4 components scheme](https://www.plantuml.com/plantuml/png/VLNBRjiw4DtxAtYzk7M00jrasHH9xG0D41UEbQu5Mfh81CIXoncv2OhyU_cWhOUiU6DnDEVCOmv7jyJISgFhsNyAYxefGNnTNdzPNkTBemy60VdRRFP9tDpSY9LakPC492IMulwLmQAiHVP639gyosnfaAL2iAlTeeIZAY0lTv_5_C4yYrKuqvbcxkmRGrnPo9uUvrSj-Ac11XOQY6G5-Mz_ShxhU1RXhGTlvMwdUFtae367tEMqK8Rp69e6WVyN6I0PIpr0Y0DOWKqnmhFtsRW_WmjPQeNkNOI8NmJMlKmzISRlfi5IMWMn3OazMTzEhT2LvbvEOYrHLg01EJ7DhyJVcN2_S_jFO7bG3fjms_liMTnj7dmRxbyFnWyb-WdTKWAM1wEGNJ6NEGci_szvisZmj3yabdLBQw5In5QoCXZcNnXyKLKJBPC1M7937Vvm5ck3YetrOTBZESuUPCtx4262fwXbuGEtr7VX_4454U3v0k4Mwb4RkfBDsDWMN4gM8sGQof3bezOvZccAjgOjEDKJKqfQm2iKpGG-OORNvTcgoWkvhNkox25qq-ngHNiW0KT07a7RkKuZe-EOO80OwcHfa1fz0Vy-6zqgMODbXLLEuOL3toNBz6KAcD3pvDsxIXjhZge4ycVnOgmuXHY940sh5rM4cNOc_pEPfwGO-4G9jJg2VHkojgieBshb3DsD99R1vDaUaA6oaXtX7yLx0QTLVCPtLTwjUIBjLYlUjJkkou0BUQuK7IGNVlHi-ecyfsNPVZ9y0JRfCYnC5wgxkCV2oW1BnmmrQE3GkGjYwg_-HqKCI66EXT5QEeQ4IokzjrdZAgPafBZY1u8IgfDuO1ftucmvPztjuIc3ZjVf-xAAgaX326riuhVcrj4qklu7)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+[Code scheme](https://www.plantuml.com/plantuml/png/TOy_JyGm3CLtVugCW7Jt2HYkkedXMFZ3xAOcPobDAjizWO3lJjii5n6oHF5x_hsNWngApMC4m5vDq9lp4LNTYLGf1P9kOlS5RZcNp8DRXiFnZDPvuvnkOax1pKhoCDpMfXM0WMh73q31FsRZT_QuGfv8BkoffDJ1EF4sx7EEX6a3Nw_-G-yYYN4AnvnCSbnU1TwCrN9NEMdrVRuiqf-4PueK1CUrtlttVbyLXhSpcdRJr5PVkITfIoVyQ0lGwdotspK-2TUBcwUn2t2WDCnZ_0K0)
 
 # Задание 3. Разработка ER-диаграммы
 
-Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
+[ER scheme](https://www.plantuml.com/plantuml/png/ZLBBJiCm4BplLrYzzy0Fe5QKGmzmAUNkEjjgaH-LlQbK8VwTO2UAko6576BBExEp7iygiOxSEWlXy866rGOlPF3jUaRr2QhxRF0dHGrytI14DUyhAdS_oNWA_aYdDcgcuAVqlC_4xKHinvhRDCTfCcPRJX97wivIPbIOwGXPPj1PctjJ9ODUHmfRgPflAvHDf3EFDzZrNDbxP7ZjSAor2MFVyH22HUqLfMUl3nOhNzOM8y-zq6jWEfAvQxJ-QJ3HsQ2b2yPQQPymJeI6uWjo9BFtn7CwBYDkBIfdxzgsvTvC3XDhTrOcecPirfL_HU9VRs_3u6OtOH_JnSD2BPUFUHq32hz4SeGwxQy36ke4ocwonLzWWEoc41eI0iD60aeueIoYM980-IzBTGu0Yf7rLDNpzPFB3WK0et4pewtGDwsptm00)
 
 # Задание 4. Создание и документирование API
 
 ### 1. Тип API
 
-Укажите, какой тип API вы будете использовать для взаимодействия микросервисов. Объясните своё решение.
+Синхронный REST API для взаимодействия микросервисов между собой и монолитом. Для межсервисного взаимодействия во время отказа от легаси будет достаточно. Обработка данных от датчиков и команд от или к устройствам происходит через очередь на основе RabbitMQ.
 
 ### 2. Документация API
 
-Здесь приложите ссылки на документацию API для микросервисов, которые вы спроектировали в первой части проектной работы. Для документирования используйте Swagger/OpenAPI или AsyncAPI.
+[metrics OpenAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/openapi.yaml)
+
+[metrics AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/metrics/asyncapi.yaml)
+
+[device-management AsyncAPI](https://github.com/iceglen/warmhouse/blob/warmhouse/apps/device-management/asyncapi.yaml)
 
 # Задание 5. Работа с docker и docker-compose
 
-Перейдите в apps.
-
-Там находится приложение-монолит для работы с датчиками температуры. В README.md описано как запустить решение.
-
-Вам нужно:
-
-1) сделать простое приложение temperature-api на любом удобном для вас языке программирования, которое при запросе /temperature?location= будет отдавать рандомное значение температуры.
-
-Locations - название комнаты, sensorId - идентификатор названия комнаты
-
-```
-	// If no location is provided, use a default based on sensor ID
-	if location == "" {
-		switch sensorID {
-		case "1":
-			location = "Living Room"
-		case "2":
-			location = "Bedroom"
-		case "3":
-			location = "Kitchen"
-		default:
-			location = "Unknown"
-		}
-	}
-
-	// If no sensor ID is provided, generate one based on location
-	if sensorID == "" {
-		switch location {
-		case "Living Room":
-			sensorID = "1"
-		case "Bedroom":
-			sensorID = "2"
-		case "Kitchen":
-			sensorID = "3"
-		default:
-			sensorID = "0"
-		}
-	}
-```
-
-2) Приложение следует упаковать в Docker и добавить в docker-compose. Порт по умолчанию должен быть 8081
-
-3) Кроме того для smart_home приложения требуется база данных - добавьте в docker-compose файл настройки для запуска postgres с указанием скрипта инициализации ./smart_home/init.sql
-
-Для проверки можно использовать Postman коллекцию smarthome-api.postman_collection.json и вызвать:
-
-- Create Sensor
-- Get All Sensors
-
-Должно при каждом вызове отображаться разное значение температуры
-
-Ревьюер будет проверять точно так же.
-
+Внутри каталога "apps" каждое приложение содержит файлы "Dockerfile" и "docker-compose.yml". Последние используются только для целей разработки. Основной файл находится в каталоге "apps".
 
 # **Задание 6. Разработка MVP**
 
-Необходимо создать новые микросервисы и обеспечить их интеграции с существующим монолитом для плавного перехода к микросервисной архитектуре. 
-
-### **Что нужно сделать**
-
-1. Создайте новые микросервисы для управления телеметрией и устройствами (с простейшей логикой), которые будут интегрированы с существующим монолитным приложением. Каждый микросервис на своем ООП языке.
-2. Обеспечьте взаимодействие между микросервисами и монолитом (при желании с помощью брокера сообщений), чтобы постепенно перенести функциональность из монолита в микросервисы. 
-
-В результате у вас должны быть созданы Dockerfiles и docker-compose для запуска микросервисов. 
+Каталог "apps" содержит полный набор приложений. Все они взаимодействуют друг с другом (REST API и события через очередь).

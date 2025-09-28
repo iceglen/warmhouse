@@ -1,0 +1,70 @@
+@startuml
+object DeviceType {
+    long id
+}
+object Device {
+    long id
+    long userId
+    DeviceType type
+}
+object DeviceConfiguration {
+    long id
+    long typeId
+}
+object DeviceStatus {
+    long id
+    long deviceId
+    string status
+    long deviceConfigurationId
+}
+
+object Action {
+    long id
+    long scenarioId
+    long deviceTypeId
+    string script
+}
+object Scenario {
+    long id
+    string name
+    long userId
+    boolean isEnabled
+}
+object Alert {
+    long id
+}
+object Notification {
+    long id
+    long alertId
+    boolean isDelivered
+}
+object User {
+    long id
+}
+
+object MetricUnit {
+    long id
+    long metricId
+    string metricValue
+    timestamp createdAt
+}
+object Metric {
+    long id
+    long deviceId
+    long name
+}
+
+Device "1" --> "1" DeviceType
+DeviceConfiguration "1" --> "many" Device
+DeviceStatus "1" --> "1" DeviceConfiguration
+DeviceStatus "1" --> "1" Device
+
+User "1" --> "many" Scenario
+Scenario "1" --> "many" Action
+Action "1" --> "many" Alert
+Alert "1" --> "many" Notification
+
+Metric "1" --> "1" MetricUnit
+Device "1" --> "many" Metric
+DeviceType "1" --> "many" Action
+@enduml

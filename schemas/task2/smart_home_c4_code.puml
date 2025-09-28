@@ -1,0 +1,26 @@
+@startuml
+
+abstract class MessengerApi {
+    void sendChatAction(long userId)
+    void sendMessage(long userId)
+}
+
+class NotificationService {
+    MessengerApi api
+    boolean sendNotification(long userId)
+}
+
+class AlertingController {
+    NotificationService service
+    boolean notifyUser(long userId)
+}
+
+TelegramApi <|.. MessengerApi
+WhatsAppApi <|.. MessengerApi
+ViberApi <|.. MessengerApi
+MaxApi <|.. MessengerApi
+
+NotificationService *-- AlertingController
+MessengerApi *-- NotificationService
+
+@enduml

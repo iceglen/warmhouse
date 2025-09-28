@@ -1,0 +1,252 @@
+asyncapi: 3.0.0
+info:
+  title: Device Management Service - RabbitMQ API
+  version: 1.0.0
+  description: |
+    AsyncAPI documentation for the Device Management Service's RabbitMQ interactions.
+    This service handles device status updates and metric collection through RabbitMQ.
+
+servers:
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5672
+    protocol: amqp
+    description: RabbitMQ message broker
+    security:
+      - userPassword: []
+
+channels:
+  status.queue:
+    address: status.queue
+    description: Queue for receiving device status commands (create, update, delete)
+    messages:
+      statusCommand:
+        name: StatusCommand
+        title: Device Status Command
+        summary: Command message for device lifecycle operations
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: ["create", "update", "delete"]
+              description: Type of operation to perform
+            payload:
+              type: object
+              description: Command-specific payload data
+              oneOf:
+                - $ref: '#/components/schemas/CreateSensorPayload'
+                - $ref: '#/components/schemas/UpdateSensorPayload'
+                - $ref: '#/components/schemas/DeleteSensorPayload'
+        examples:
+          - name: Create Device Command
+            payload:
+              status: "create"
+              payload:
+                name: "Temperature Sensor 1"
+                type: "temperature"
+                location: "Living Room"
+                unit: "celsius"
+          - name: Update Device Command
+            payload:
+              status: "update"
+              payload:
+                id: 123
+                legacyId: 456
+                data:
+                  name: "Updated Temperature Sensor"
+                  type: "temperature"
+                  location: "Bedroom"
+                  value: 22.5
+                  unit: "celsius"
+                  status: "active"
+          - name: Delete Device Command
+            payload:
+              status: "delete"
+              payload:
+                id: 123
+                legacySystemId: 456
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          exclusive: false
+          durable: false
+          autoDelete: false
+
+  metrics.queue:
+    address: metrics.queue
+    description: Queue for sending device metrics data
+    messages:
+      metricData:
+        name: MetricData
+        title: Device Metric Data
+        summary: Metric data collected from devices
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/MetricDto'
+        examples:
+          - name: Temperature Metric
+            payload:
+              deviceId: 123
+              metricName: "temperature"
+              metricValue: "22.5"
+              timestamp: "2024-01-15T10:30:00Z"
+          - name: Humidity Metric
+            payload:
+              deviceId: 124
+              metricName: "humidity"
+              metricValue: "45.2"
+              timestamp: "2024-01-15T10:30:00Z"
+    bindings:
+      amqp:
+        is: queue
+        queue:
+          exclusive: false
+          durable: false
+          autoDelete: false
+
+operations:
+  receiveStatusCommands:
+    action: receive
+    channel:
+      $ref: '#/channels/status.queue'
+    summary: Receive device status commands
+    description: |
+      Listens for device lifecycle commands (create, update, delete) on the status queue.
+      Each command triggers corresponding operations in the device management system.
+    messages:
+      - $ref: '#/channels/status.queue/messages/statusCommand'
+
+  sendMetrics:
+    action: send
+    channel:
+      $ref: '#/channels/metrics.queue'
+    summary: Send device metrics data
+    description: |
+      Sends metric data collected from devices to the metrics queue.
+      This data is typically generated when device updates include measurement values.
+    messages:
+      - $ref: '#/channels/metrics.queue/messages/metricData'
+
+components:
+  schemas:
+    MetricDto:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+          description: Unique identifier of the device
+        metricName:
+          type: string
+          description: Name of the metric (e.g., temperature, humidity)
+        metricValue:
+          type: string
+          description: Value of the metric as a string
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp when the metric was collected
+      required:
+        - deviceId
+        - metricName
+        - metricValue
+        - timestamp
+
+    CreateSensorPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the sensor/device
+        type:
+          type: string
+          description: Type of sensor (e.g., temperature, humidity)
+        location:
+          type: string
+          description: Location where the device is installed
+        unit:
+          type: string
+          description: Measurement unit (e.g., celsius, percentage)
+      required:
+        - name
+        - type
+        - location
+
+    UpdateSensorPayload:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal device ID (optional)
+        legacyId:
+          type: integer
+          format: int64
+          description: Legacy system device ID (optional)
+        data:
+          $ref: '#/components/schemas/UpdateSensorData'
+      required:
+        - data
+
+    UpdateSensorData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Updated name of the sensor
+        type:
+          type: string
+          description: Updated type of sensor
+        location:
+          type: string
+          description: Updated location
+        value:
+          type: number
+          format: double
+          description: Measurement value (optional)
+        unit:
+          type: string
+          description: Measurement unit (optional)
+        status:
+          type: string
+          description: Device status (optional)
+
+    DeleteSensorPayload:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Internal device ID (optional)
+        legacySystemId:
+          type: integer
+          format: int64
+          description: Legacy system device ID (optional)
+
+  securitySchemes:
+    userPassword:
+      type: userPassword
+      description: RabbitMQ username and password authentication
+
+# Message Flow Description
+#
+# The system implements the following message flows:
+#
+# 1. Status Command Flow:
+#    - External systems send status commands to the 'status.queue'
+#    - StatusListener receives and processes these commands
+#    - Commands can be: create, update, or delete operations
+#    - For update commands with measurement values, metrics are sent to 'metrics.queue'
+#
+# 2. Metric Data Flow:
+#    - When device updates include measurement values, MetricService sends metrics to 'metrics.queue'
+#    - Metrics contain device ID, metric name, value, and timestamp
+#    - This data can be consumed by monitoring/analytics systems
+#
+# Security:
+# - RabbitMQ connection uses username/password authentication
+# - Connection details are configured via environment variables
+# - Queues are non-durable and non-exclusive
